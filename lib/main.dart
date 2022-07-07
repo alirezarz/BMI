@@ -21,8 +21,21 @@ class BMI extends StatelessWidget {
 }
 
 
-class HomePage extends StatelessWidget {
-  const HomePage({Key? key}) : super(key: key);
+class HomePage extends StatefulWidget {
+  HomePage({Key? key}) : super(key: key);
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  TextEditingController _heightControler = TextEditingController();
+
+  TextEditingController _weightControler = TextEditingController();
+
+  double _bmiResult = 0;
+
+  String _textResult = "";
 
   @override
   Widget build(BuildContext context) {
@@ -51,12 +64,13 @@ class HomePage extends StatelessWidget {
                   color: Colors.black,
                   height: 90.0,
                   width: 130.0,
-                  child: const TextField(
-                    style: TextStyle(
+                  child: TextField(
+                    controller: _heightControler,
+                    style: const TextStyle(
                       color: Colors.yellow,
                       fontSize: 35.0,
                     ),
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       border: InputBorder.none,
                       hintText: 'Height',
                       hintStyle: TextStyle(
@@ -71,12 +85,13 @@ class HomePage extends StatelessWidget {
                   color: Colors.black,
                   height: 90.0,
                   width: 130.0,
-                  child: const TextField(
-                    style: TextStyle(
+                  child: TextField(
+                    controller: _weightControler,
+                    style: const TextStyle(
                       color: Colors.yellow,
                       fontSize: 35.0
                     ),
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       border: InputBorder.none,
                       hintText: 'Weight',
                       hintStyle: TextStyle(
@@ -91,16 +106,32 @@ class HomePage extends StatelessWidget {
             ),
           ),
           ElevatedButton(
-              onPressed: (){},
+              onPressed: (){
+                double height = double.parse(_heightControler.text);
+                double weight = double.parse(_weightControler.text);
+                setState((){
+                  _bmiResult = weight / (height * height);
+                  if(_bmiResult > 25){
+                    _textResult = "Over Weight";
+                  }else if(_bmiResult >= 18.5 && _bmiResult <= 25){
+                    _textResult = "Normal Weight";
+                  }else{
+                    _textResult = "Under Weight";
+                  }
+
+                });
+              },
               style: ElevatedButton.styleFrom(
                 primary: Colors.black,
               ),
               child: const Text('Calculate',style: TextStyle(color: Colors.yellow, fontSize: 25.0),)
           ),
           const SizedBox(  height: 50.0,),
-          const Text('0', style: TextStyle(color: Colors.yellow, fontSize: 60.0),),
+          Text(_bmiResult.ceil().toString(), style: TextStyle(color: Colors.yellow, fontSize: 60.0),),
           const SizedBox(height: 40.0,),
-          const Text('Normal Wieght', style: TextStyle(color: Colors.yellow, fontSize: 30.0),),
+          Visibility(
+            visible: _textResult.isNotEmpty,
+            child: Text(_textResult, style: TextStyle(color: Colors.yellow, fontSize: 30.0),)),
           const SizedBox( height: 40.0,),
           const RightBar(barWidth: 25.0),
           const RightBar(barWidth: 60.0),
